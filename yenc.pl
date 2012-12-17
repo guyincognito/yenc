@@ -20,3 +20,13 @@ my @yenc_list = map $_ ~~ @esc_list ? "=" . chr(($_ + 64) % 256) : chr($_),
 my %yenc_map = ();
 @yenc_map{map chr($_), 0 .. 255} = @yenc_list;
 my %ydec_map = reverse %yenc_map;
+
+sub yenc_line {
+    my ($line, $line_length, @esc_char) = @_;
+    my @line_list = split '', $line;
+    my $esc_ct = grep ord($_) ~~ @esc_char,  @line_list;
+    return join '', map $yenc_map{$_}, (
+    	@line_list + $esc_ct > $line_length ? 
+    	@line_list[0 .. $#line_list - $esc_ct] : @line_list
+    );
+}
