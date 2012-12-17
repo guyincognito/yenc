@@ -30,3 +30,14 @@ sub yenc_line {
     	@line_list[0 .. $#line_list - $esc_ct] : @line_list
     );
 }
+
+sub ydec_line {
+    #Empty lists don't affect the outcome
+    no warnings qw(uninitialized);
+    my $line = shift;
+    my @segment = split '=', $line;
+    return join '', ((map $ydec_map{$_}, split '', $segment[0]), map { 
+	my @code = split '', $_;
+	join '', ($ydec_map{"=$code[0]"}, (map $ydec_map{$_}, @code[1 .. $#code]));
+    } @segment[1 .. $#segment]);
+}
