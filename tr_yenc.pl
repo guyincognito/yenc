@@ -12,7 +12,7 @@ sub yenc_string {
 
     #Now add escape characters
     for my $pos (sort { $b <=> $a } @esc_positions) {
-        $str = insert('=', $pos, $str);
+        insert('=', $pos, \$str);
     }
 
     return $str;
@@ -30,7 +30,8 @@ sub get_esc_positions {
 
 sub insert {
     my ($chr, $idx, $str) = @_;
-    return (substr $str, 0, $idx) . $chr . (substr $str, $idx);
+    my $orig = qr/(.{$idx})(.)(.*)/;
+    $$str =~ s/$orig/$1$chr$2$3/;
 }
 
 my $str = join '', map { chr $_ } (0 .. 255);
